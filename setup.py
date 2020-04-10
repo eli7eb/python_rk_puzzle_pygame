@@ -12,6 +12,6 @@ setup(
     url='',
     license='',
     author='elisheva',
-    author_email='',
-    description=''
+    author_email='eli7eb@gmail.com',
+    description='RK random Puzzle'
 )

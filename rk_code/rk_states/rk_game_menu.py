@@ -1,5 +1,4 @@
 import pygame, os, sys
-import rk_code.rk_data
 from pygame.locals import *
 
 from rk_code.rk_states import *
@@ -8,10 +7,10 @@ from rk_code.rk_utils.bitmap_font import *
 from rk_code.rk_utils.rk_get_mood_and_image import GetMoodInput
 
 
-class MainMenuState(GameState):
+class GameMenuState(GameState):
 
     def __init__(self, game):
-        super(MainMenuState, self).__init__(game)
+        super(GameMenuState, self).__init__(game)
         self.playGameState = None
         self.font = BitmapFont('fasttracker2-style_12x12.png', 12, 12)
         self.index = 0

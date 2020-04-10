@@ -1,5 +1,6 @@
+import rk_code.rk_states.rk_game_menu
 from rk_code.rk_settings.rk_states_manager import *
-from rk_code.rk_states import *
+
 
 # main game loop
 # game state machine
