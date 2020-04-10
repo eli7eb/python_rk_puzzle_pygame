@@ -57,6 +57,7 @@ class RKPuzzleGame(object):
         self.mainwindow = pygame.display.set_mode((width, height))
         self.background = pygame.Color(0, 0, 0)
         self.currentState = None
+        self.mood_str = ''
 
     def changeState(self, newState):
         if (self.currentState != None):

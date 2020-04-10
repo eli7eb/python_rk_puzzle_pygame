@@ -4,7 +4,6 @@ from pygame.locals import *
 from rk_code.rk_states import *
 from rk_code.rk_settings.rk_states_manager import *
 from rk_code.rk_utils.bitmap_font import *
-from rk_code.rk_utils.rk_get_mood_and_image import GetMoodInput
 
 COLOR_INACTIVE = pygame.Color('lightskyblue3')
 COLOR_ACTIVE = pygame.Color('dodgerblue2')
@@ -72,71 +71,56 @@ class InputBox:
 
 
 class GameMenuState(GameState):
-    input_box1 = InputBox(100, 100, 140, 32, False, 'Enter your mood')
+    clock = pygame.time.Clock()
+    input_box1 = InputBox(100, 200, 140, 32, False, 'Enter your mood')
     input_box2 = InputBox(100, 300, 140, 32, True)
     input_boxes = [input_box1, input_box2]
     done = False
 
     def __init__(self, game):
         super(GameMenuState, self).__init__(game)
-        self.playGameState = None
-        self.font = BitmapFont('fasttracker2-style_12x12.png', 12, 12)
+        self.playGameState = game
+        self.next = BitmapFont('fasttracker2-style_12x12.png', 12, 12)
         self.index = 0
         self.inputTick = 0
-        self.menuItems = ['Start Game', 'Quit']
+        self.game = game
+#        self.menuItems = ['Start Game', 'Quit']
 
     def setPlayState(self, state):
         self.playGameState = state
 
     def update(self, gameTime):
-        keys = pygame.key.get_pressed()
-        if ((keys[K_UP] or keys[K_DOWN]) and self.inputTick == 0):
-            self.inputTick = 250
-            if (keys[K_UP]):
-                self.index -= 1
-                if (self.index < 0):
-                    self.index = len(self.menuItems) - 1
-            elif (keys[K_DOWN]):
-                self.index += 1
-                if (self.index == len(self.menuItems)):
-                    self.index = 0
-        elif (self.inputTick > 0):
-            self.inputTick -= gameTime
+        done = False
+        while not done:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    done = True
+                for box in self.input_boxes:
+                    box.handle_event(event)
+                    if box.search_done == True:
+                        mood_string = box.get_search_string()
+                        self.game.mood_string = mood_string
+                        done = True
 
-        if (self.inputTick < 0):
-            self.inputTick = 0
+            for box in self.input_boxes:
+                box.update()
 
-        if (keys[K_SPACE]):
-            if (self.index == 1):
-                self.game.changeState(None)  # exit the game
-            elif (self.index == 0):
-                print(self.playGameState)
-                self.game.changeState(self.playGameState)
+            self.game.mainwindow.fill((30, 30, 30))
+            for box in self.input_boxes:
+                box.draw(self.game.mainwindow)
+
+            pygame.display.flip()
+            self.clock.tick(30)
+
+        self.game.changeState(self.playGameState)
 
 
     def draw(self, surface):
-# draw the text input for mood
-
-#
-        self.font.centre(surface, "Play New Game", 48)
-
 
         for box in self.input_boxes:
             box.update()
-
-        surface.fill((30, 30, 30))
+        surface.fill((10, 10, 10))
         for box in self.input_boxes:
             box.draw(surface)
 
         count = 0
-        y = surface.get_rect().height - len(self.menuItems) * 160
-        for item in self.menuItems:
-            itemText = "  "
-
-            if (count == self.index):
-                itemText = "> "
-
-            itemText += item
-            self.font.draw(surface, itemText, 25, y)
-            y += 24
-            count += 1
