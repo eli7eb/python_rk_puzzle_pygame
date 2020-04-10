@@ -74,6 +74,14 @@ class InputBox:
 
 class GetMoodInput(GameState):
 
+    def main(self):
+        clock = pygame.time.Clock()
+        input_box1 = InputBox(100, 100, 140, 32)
+        input_box2 = InputBox(100, 300, 140, 32)
+        input_boxes = [input_box1, input_box2]
+        done = False
+
+
     def __init__(self, game):
         super(GetMoodInput, self).__init__(game)
         self.playGameState = None
@@ -81,18 +89,22 @@ class GetMoodInput(GameState):
         self.index = 0
         self.inputTick = 0
 
+        clock = pygame.time.Clock()
+        input_box1 = InputBox(100, 100, 140, 32)
+        input_box2 = InputBox(100, 300, 140, 32)
+        input_boxes = [input_box1, input_box2]
+        done = False
+
+
     def setPlayState(self, state):
         self.playGameState = state
 
     def draw(self, surface):
-        clock = pygame.time.Clock()
-        input_box1 = InputBox(100, 100, 140, 32, False, 'Your mood : ')
-        input_box2 = InputBox(100, 300, 140, 32, True)
-        input_boxes = [input_box1, input_box2]
-#        self.font.centre(surface, "Your mood is ", 48)
-        done = False
+        surface.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
+        # Blit the rect.
+        pygame.draw.rect(surface, self.color, self.rect, 2)
 
-
+    def main(self, surface):
         while not done:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -101,18 +113,18 @@ class GetMoodInput(GameState):
                     search_string = box.get_search_string()
                     print(search_string)
                     done = True
-                for box in input_boxes:
+                for box in self.input_boxes:
                     box.handle_event(event)
 
-            for box in input_boxes:
+            for box in self.input_boxes:
                 box.update()
 
             surface.fill((30, 30, 30))
-            for box in input_boxes:
+            for box in self.input_boxes:
                 box.draw(surface)
 
             pygame.display.flip()
-            clock.tick(30)
+            self.clock.tick(30)
 
         count = 0
         y = surface.get_rect().height - len(self.menuItems) * 160

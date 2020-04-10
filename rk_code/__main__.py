@@ -1,6 +1,6 @@
-import rk_code.rk_states.rk_game_menu
-from rk_code.rk_settings.rk_states_manager import *
 
+from rk_code.rk_settings.rk_states_manager import *
+from rk_code.rk_states.rk_game_menu import GameMenuState
 
 # main game loop
 # game state machine
@@ -21,7 +21,7 @@ from rk_code.rk_settings.rk_states_manager import *
 
 #
 puzzleGame = RKPuzzleGame("RK_PUZZLE", 600, 800)
-mainMenuState = (puzzleGame)
+mainMenuState = GameMenuState(puzzleGame)
 
 puzzleGame.run(mainMenuState)
 
