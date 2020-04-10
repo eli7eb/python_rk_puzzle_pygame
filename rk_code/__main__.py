@@ -1,6 +1,6 @@
-import pygame
-import sys
-from pygame.locals import *
+from rk_code.rk_settings.rk_states_manager import *
+from rk_code.rk_states import *
+
 # main game loop
 # game state machine
 # switch between game states
@@ -19,8 +19,12 @@ from pygame.locals import *
 # about
 
 #
+puzzleGame = RKPuzzleGame("RK_PUZZLE", 600, 800)
+mainMenuState = (puzzleGame)
 
+puzzleGame.run(mainMenuState)
 
+'''
 def getSearchString():
     search_string = input("tell me what to search for you puzzle ")
 
@@ -41,3 +45,5 @@ def main():
 
 
 main()
+
+'''
