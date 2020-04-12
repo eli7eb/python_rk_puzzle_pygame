@@ -3,7 +3,7 @@ from pygame.locals import *
 from rk_code.rk_utils.bitmap_font import *
 from rk_code.rk_settings.rk_states_manager import *
 from rk_code.rk_data.rk_consts import *
-
+from rk_code.rk_communication.rk_http_requests import *
 """
 ----------------------------------------------------------------------------------------------------
 	InterstitialState
@@ -12,6 +12,8 @@ from rk_code.rk_data.rk_consts import *
 	messages
 ----------------------------------------------------------------------------------------------------
 """
+
+
 
 
 class InterstitialState(GameState):
@@ -24,6 +26,12 @@ class InterstitialState(GameState):
         self.waitTimer = waitTimeMs
         self.doneImage = False
 
+    def getImageToSplit(self):
+        self.mood_string = self.game.params[0] if (len(self.game.params[0]) > 0) else 'random'
+        searchArtObj = SearchArt(self.mood_string)
+        imageObj = searchArtObj.getImageList()
+
+
     def update(self, gameTime):
         self.waitTimer -= gameTime
         if (self.message == GLOBAL_GAME_GET_READY_MSG and self.doneImage == False):
@@ -34,5 +42,3 @@ class InterstitialState(GameState):
     def draw(self, surface):
         self.font.centre(surface, self.message, surface.get_rect().height / 2)
 
-    def getImageToSplit(self):
-        self.mood_string = self.game.params[0] if (len(self.game.params[0]) > 0) else 'random'
