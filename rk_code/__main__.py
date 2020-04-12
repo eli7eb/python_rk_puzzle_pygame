@@ -1,8 +1,8 @@
-
 from rk_code.rk_settings.rk_states_manager import *
 from rk_code.rk_states.rk_game_menu import GameMenuState
 from rk_code.rk_states.interstitial import *
 from rk_code.rk_states.rk_game_loop import *
+from rk_code.rk_data.rk_consts import *
 # main game loop
 # game state machine
 # switch between game states
@@ -23,9 +23,9 @@ from rk_code.rk_states.rk_game_loop import *
 #
 puzzleGame = RKPuzzleGame("RK_PUZZLE", 600, 800)
 mainMenuState = GameMenuState(puzzleGame)
-gameOverState = InterstitialState( puzzleGame, 'G A M E  O V E R !', 5000, mainMenuState )
+gameOverState = InterstitialState(puzzleGame, GLOBAL_GAME_OVER_MSG, 5000, mainMenuState )
 playGameState = PlayGameState( puzzleGame, gameOverState )
-getReadyState = InterstitialState( puzzleGame, 'Get Ready!', 2000, playGameState )
+getReadyState = InterstitialState( puzzleGame, GLOBAL_GAME_GET_READY_MSG, 2000, playGameState )
 mainMenuState.setPlayState( getReadyState )
 
 puzzleGame.run(mainMenuState)

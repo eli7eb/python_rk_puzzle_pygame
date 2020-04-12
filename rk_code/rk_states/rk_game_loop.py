@@ -14,9 +14,11 @@ class PlayGameState(GameState):
         self.initialise()
 
     def onEnter(self, previousState, params):
-# ASSERT if params not there go for random
-        self.mood_string = self.game.params[0]
+
+    # check uon user input
+
         self.player_controller.pause(False)
+    # prepare image
 
     def initialise(self):
         make = self
