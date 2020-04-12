@@ -13,7 +13,9 @@ class PlayGameState(GameState):
         self.gameOverState = gameOverState
         self.initialise()
 
-    def onEnter(self, previousState):
+    def onEnter(self, previousState, params):
+# ASSERT if params not there go for random
+        self.mood_string = self.game.params[0]
         self.player_controller.pause(False)
 
     def initialise(self):
@@ -23,9 +25,9 @@ class PlayGameState(GameState):
     def update(self, gameTime):
         for ctrl in self.controllers:
             ctrl.update(gameTime)
-
+# TODO add params for game over like total
         if (self.player_controller.model.lives == 0):
-            self.game.changeState(self.gameOverState)
+            self.game.changeState(self.gameOverState, ['0'])
 
         if (len(self.swarm_controller.invaders) == 0):
             self.swarmSpeed -= 50

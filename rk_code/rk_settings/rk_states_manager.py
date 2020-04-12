@@ -21,7 +21,7 @@ class GameState(object):
     Called by the game when entering the state for the first time.
     """
 
-    def onEnter(self, previousState):
+    def onEnter(self, previousState, params):
         pass
 
     """
@@ -57,9 +57,9 @@ class RKPuzzleGame(object):
         self.mainwindow = pygame.display.set_mode((width, height))
         self.background = pygame.Color(0, 0, 0)
         self.currentState = None
-        self.mood_str = ''
+        self.params = []
 
-    def changeState(self, newState):
+    def changeState(self, newState, params):
         if (self.currentState != None):
             self.currentState.onExit()
 
@@ -69,11 +69,12 @@ class RKPuzzleGame(object):
 
         oldState = self.currentState
         self.currentState = newState
-        newState.onEnter(oldState)
+        self.params = params
+        newState.onEnter(oldState, params)
 
     def run(self, initialState):
 
-        self.changeState(initialState)
+        self.changeState(initialState, self.params)
 
         while True:
 

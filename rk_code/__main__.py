@@ -22,10 +22,11 @@ from rk_code.rk_states.rk_game_loop import *
 
 #
 puzzleGame = RKPuzzleGame("RK_PUZZLE", 600, 800)
+mainMenuState = GameMenuState(puzzleGame)
 gameOverState = InterstitialState( puzzleGame, 'G A M E  O V E R !', 5000, mainMenuState )
-playGameState = PlayGameState(puzzleGame, gameOverState)
-mainMenuState = GameMenuState(playGameState)
-
+playGameState = PlayGameState( puzzleGame, gameOverState )
+getReadyState = InterstitialState( puzzleGame, 'Get Ready!', 2000, playGameState )
+mainMenuState.setPlayState( getReadyState )
 
 puzzleGame.run(mainMenuState)
 

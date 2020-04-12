@@ -112,7 +112,7 @@ class GameMenuState(GameState):
             pygame.display.flip()
             self.clock.tick(30)
 
-        self.game.changeState(self.playGameState)
+        self.game.changeState(self.playGameState,[self.game.mood_string])
 
 
     def draw(self, surface):
