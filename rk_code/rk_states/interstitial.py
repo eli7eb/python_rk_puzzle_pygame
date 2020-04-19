@@ -29,7 +29,11 @@ class InterstitialState(GameState):
     def getImageToSplit(self):
         self.mood_string = self.game.params[0] if (len(self.game.params[0]) > 0) else 'random'
         searchArtObj = SearchArt(self.mood_string)
-        imageObj = searchArtObj.getImageList()
+        art_dict = searchArtObj.getImageList()
+        print(art_dict)
+        getArtWorkObj = GetArtWork(art_dict)
+        getArtWorkObj.getArtImage()
+
 
 
     def update(self, gameTime):
