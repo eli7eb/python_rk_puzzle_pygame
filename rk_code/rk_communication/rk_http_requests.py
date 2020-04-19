@@ -1,6 +1,8 @@
 import requests
 import json
+from PIL import Image
 from random import randrange
+from rk_code.rk_data.rk_consts import *
 
 class SearchArt:
 
@@ -39,7 +41,7 @@ class SearchArt:
         self.currentState = None
         self.search_value = mood_str
 
-class GetArtWork:
+class GetArtTiles:
     print('get the one')
 
     def __init__(self, art_dict):
@@ -68,5 +70,35 @@ class GetArtWork:
             print(response.text)
             json_obj = json.loads(response.content.decode('utf-8'))
             print(json_obj)
+            return (json_obj)
         else:
             print ('error '+response.status_code + ' '+response.text)
+
+
+
+class GetArtImage:
+
+    def __init__(self, art_obj):
+        self.currentState = None
+        self.art_obj = art_obj
+
+    def searchForLevel(self, image_levels):
+        for l in image_levels:
+            if l['name'] == 'z3':
+                return l
+        return image_levels[0]
+
+    def getBitmapFromTiles(self):
+
+        # choose the level by name z0 is the largest resolution z6 is the lowest resolution
+        #   look for z3 or z4
+        image_levels = self.art_obj['levels']
+        art_level = self.searchForLevel(image_levels)
+        final_size_image = Image.new('RGB', (art_level['width'], art_level['height']))
+        for i in art_level['tiles']:
+            tmp_image = Image.open(requests.get(i['url'], stream=True).raw)
+            tmp_x = i['x'] * GLOBAL_TILE_SIZE
+            tmp_y = i['y'] * GLOBAL_TILE_SIZE
+            print(final_size_image.width)
+            final_size_image.paste(tmp_image,tmp_x,tmp_y)
+        return final_size_image
