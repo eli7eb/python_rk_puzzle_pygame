@@ -22,6 +22,10 @@ class SearchArt:
                        "material": rk_type_material}
 
         response = requests.request("GET", rk_api_url_base_prefix, headers=headers, params=query_params)
+        try:
+            response.raise_for_status()
+        except Exception as exc:
+            print('There was a problem: %s' % (exc))
         if response.status_code == 200:
             print('success')
             print(response.text)
@@ -65,15 +69,15 @@ class GetArtTiles:
         query_params = { "format": format_json }
 
         response = requests.request("GET", rk_api_url_base_prefix, headers=headers, params=query_params)
-        if response.status_code == 200:
-            print('success')
-            print(response.text)
-            json_obj = json.loads(response.content.decode('utf-8'))
-            print(json_obj)
-            return (json_obj)
-        else:
-            print ('error '+response.status_code + ' '+response.text)
-
+        try:
+            response.raise_for_status()
+        except Exception as exc:
+            print('There was a problem: %s' % (exc))
+        print('success')
+        print(response.text)
+        json_obj = json.loads(response.content.decode('utf-8'))
+        print(json_obj)
+        return (json_obj)
 
 
 class GetArtImage:
