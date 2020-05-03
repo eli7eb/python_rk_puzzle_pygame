@@ -1,8 +1,10 @@
-from rk_code.rk_settings.rk_states_manager import *
-from rk_code.rk_states.rk_game_menu import GameMenuState
+from rk_code.rk_settings.rk_control import *
+from rk_code.rk_states.rk_game_menu import Menu
 from rk_code.rk_states.interstitial import *
-from rk_code.rk_states.rk_game_loop import *
+from rk_code.rk_states.rk_game_main_state import GameState
 from rk_code.rk_data.rk_consts import *
+from rk_code.rk_states.rk_game_start import StartState
+from rk_code.rk_states.rk_game_menu import Options
 # main game loop
 # game state machine
 # switch between game states
@@ -21,6 +23,22 @@ from rk_code.rk_data.rk_consts import *
 # about
 
 #
+settings = {
+    'size': (600, 800),
+    'fps': 60
+}
+
+app = Control()
+state_dict = {
+    'menu': Menu(),
+    'game': StartState(),
+    'options':Options()
+}
+app.setup_states(state_dict, 'menu')
+app.main_game_loop()
+pygame.quit()
+sys.exit()
+'''
 puzzleGame = RKPuzzleGame("RK_PUZZLE", 600, 800)
 mainMenuState = GameMenuState(puzzleGame)
 gameOverState = InterstitialState(puzzleGame, GLOBAL_GAME_OVER_MSG, 5000, mainMenuState )
@@ -29,27 +47,4 @@ getReadyState = InterstitialState( puzzleGame, GLOBAL_GAME_GET_READY_MSG, 2000, 
 mainMenuState.setPlayState( getReadyState )
 
 puzzleGame.run(mainMenuState)
-
-'''
-def getSearchString():
-    search_string = input("tell me what to search for you puzzle ")
-
-def getImageToParse():
-    ss = input("tell me what to search for you puzzle ")
-
-
-def main():
-    pygame.init()
-    surface = pygame.display.set_mode((600, 900))
-    pygame.display.set_caption('RK puzzle')
-    getSearchString()
-    while True:  # main game loop
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-
-
-main()
-
 '''

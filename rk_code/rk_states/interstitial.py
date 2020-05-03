@@ -1,9 +1,11 @@
 import pygame, os, sys
 from pygame.locals import *
 from rk_code.rk_utils.bitmap_font import *
-from rk_code.rk_settings.rk_states_manager import *
+from rk_code.rk_settings.rk_control import *
 from rk_code.rk_data.rk_consts import *
 from rk_code.rk_communication.rk_http_requests import *
+from rk_code.rk_states.rk_game_main_state import GameState
+
 """
 ----------------------------------------------------------------------------------------------------
 	InterstitialState

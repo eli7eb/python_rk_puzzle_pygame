@@ -1,6 +1,6 @@
 import pygame, os, sys
 from pygame.locals import *
-from rk_code.rk_settings.rk_states_manager import GameState
+from rk_code.rk_settings.rk_control import GameState
 
 class PlayGameState(GameState):
 

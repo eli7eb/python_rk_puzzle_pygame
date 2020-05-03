@@ -1,8 +1,7 @@
 import pygame, os, sys
 from pygame.locals import *
 
-from rk_code.rk_states import *
-from rk_code.rk_settings.rk_states_manager import *
+from rk_code.rk_settings.rk_states import State
 from rk_code.rk_utils.bitmap_font import *
 
 COLOR_INACTIVE = pygame.Color('lightskyblue3')
@@ -11,116 +10,154 @@ FONT_FILE = './rk_data/fasttracker2-style_12x12.png'
 pygame.font.init()
 FONT = pygame.font.Font(None, 32)
 
-class InputBox:
 
+class MenuManager:
+    def __init__(self):
+        self.selected_index = 0
+        self.last_option = None
+        self.selected_color = (255, 255, 0)
+        self.deselected_color = (255, 255, 255)
 
-    def __init__(self, x, y, w, h, am_i_active, text=''):
-        self.rect = pygame.Rect(x, y, w, h)
-        self.color = COLOR_INACTIVE
-        self.text = text
-        self.txt_surface = FONT.render(text, True, self.color)
-        self.am_i_active = am_i_active
-        self.active = False
-        self.search_done = False
-        self.look_for_str = ''
-
-    def handle_event(self, event):
-        # first field is for display only
-        if (self.am_i_active == False):
-            return
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            # If the user clicked on the input_box rect.
-            if self.rect.collidepoint(event.pos):
-                # Toggle the active variable.
-                self.active = not self.active
+    def draw_menu(self, screen):
+        '''handle drawing of the menu options'''
+        for i, opt in enumerate(self.rendered["des"]):
+            opt[1].center = (self.screen_rect.centerx, self.from_bottom + i * self.spacer)
+            if i == self.selected_index:
+                rend_img, rend_rect = self.rendered["sel"][i]
+                rend_rect.center = opt[1].center
+                screen.blit(rend_img, rend_rect)
             else:
-                self.active = False
-            # Change the current color of the input box.
-            self.color = COLOR_ACTIVE if self.active else COLOR_INACTIVE
-        if event.type == pygame.KEYDOWN:
-            if self.active:
-                if event.key == pygame.K_RETURN:
-                    print(self.text)
-                    self.look_for_str = self.text
-                    self.search_done = True
-                    self.text = ''
-                elif event.key == pygame.K_BACKSPACE:
-                    self.text = self.text[:-1]
-                else:
-                    self.text += event.unicode
-                # Re-render the text.
-                self.txt_surface = FONT.render(self.text, True, self.color)
+                screen.blit(opt[0], opt[1])
 
-    def update(self):
-        # Resize the box if the text is too long.
-        width = max(200, self.txt_surface.get_width()+10)
-        self.rect.w = width
+    def update_menu(self):
+        self.mouse_hover_sound()
+        self.change_selected_option()
+
+    def get_event_menu(self, event):
+        if event.type == pygame.KEYDOWN:
+            '''select new index'''
+            if event.key in [pygame.K_UP, pygame.K_w]:
+                self.change_selected_option(-1)
+            elif event.key in [pygame.K_DOWN, pygame.K_s]:
+                self.change_selected_option(1)
+
+            elif event.key == pygame.K_RETURN:
+                self.select_option(self.selected_index)
+        self.mouse_menu_click(event)
+
+    def mouse_hover_sound(self):
+        '''play sound when selected option changes'''
+        for i, opt in enumerate(self.rendered["des"]):
+            if opt[1].collidepoint(pygame.mouse.get_pos()):
+                if self.last_option != opt:
+                    self.last_option = opt
+
+    def mouse_menu_click(self, event):
+        '''select menu option '''
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            for i, opt in enumerate(self.rendered["des"]):
+                if opt[1].collidepoint(pygame.mouse.get_pos()):
+                    self.selected_index = i
+                    self.select_option(i)
+                    break
+
+    def pre_render_options(self):
+        '''setup render menu options based on selected or deselected'''
+        font_deselect = pygame.font.SysFont("arial", 50)
+        font_selected = pygame.font.SysFont("arial", 70)
+
+        rendered_msg = {"des": [], "sel": []}
+        for option in self.options:
+            d_rend = font_deselect.render(option, 1, self.deselected_color)
+            d_rect = d_rend.get_rect()
+            s_rend = font_selected.render(option, 1, self.selected_color)
+            s_rect = s_rend.get_rect()
+            rendered_msg["des"].append((d_rend, d_rect))
+            rendered_msg["sel"].append((s_rend, s_rect))
+        self.rendered = rendered_msg
+
+    def select_option(self, i):
+        '''select menu option via keys or mouse'''
+        if i == len(self.next_list):
+            self.quit = True
+        else:
+            self.next = self.next_list[i]
+            self.done = True
+            self.selected_index = 0
+
+    def change_selected_option(self, op=0):
+        '''change highlighted menu option'''
+        for i, opt in enumerate(self.rendered["des"]):
+            if opt[1].collidepoint(pygame.mouse.get_pos()):
+                self.selected_index = i
+        if op:
+            self.selected_index += op
+            max_ind = len(self.rendered['des']) - 1
+            if self.selected_index < 0:
+                self.selected_index = max_ind
+            elif self.selected_index > max_ind:
+                self.selected_index = 0
+
+
+class Menu(State, MenuManager):
+    def __init__(self):
+        State.__init__(self)
+        MenuManager.__init__(self)
+        self.next = 'game'
+        self.options = ['Play', 'Options', 'Quit']
+        self.next_list = ['game', 'options']
+        self.pre_render_options()
+        self.from_bottom = 200
+        self.spacer = 75
+
+    def cleanup(self):
+        print('cleaning up Main Menu state stuff')
+
+    def startup(self):
+        print('starting Main Menu state stuff')
+
+    def get_event(self, event):
+        if event.type == pygame.QUIT:
+            self.quit = True
+        self.get_event_menu(event)
+
+    def update(self, screen, dt):
+        self.update_menu()
+        self.draw(screen)
 
     def draw(self, screen):
-        # Blit the text.
-        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
-        # Blit the rect.
-        pygame.draw.rect(screen, self.color, self.rect, 2)
-
-    def get_search_done(self):
-        return self.search_done
-
-    def get_search_string(self):
-        return self.look_for_str
+        screen.fill((255, 0, 0))
+        self.draw_menu(screen)
 
 
+class Options(State, MenuManager):
+    def __init__(self):
+        State.__init__(self)
+        MenuManager.__init__(self)
+        self.next = 'menu'
+        self.options = ['Music', 'Sound', 'Graphics', 'Controls', 'Main Menu']
+        self.next_list = ['options', 'options', 'options', 'options', 'menu']
+        self.from_bottom = 200
+        self.spacer = 75
+        self.deselected_color = (150, 150, 150)
+        self.selected_color = (0, 0, 0)
+        self.pre_render_options()
 
-class GameMenuState(GameState):
-    clock = pygame.time.Clock()
-    input_box1 = InputBox(100, 200, 140, 32, False, 'Enter your mood')
-    input_box2 = InputBox(100, 300, 140, 32, True)
-    input_boxes = [input_box1, input_box2]
-    done = False
+    def cleanup(self):
+        print('cleaning up Options state stuff')
 
-    def __init__(self, game):
-        super(GameMenuState, self).__init__(game)
-        self.playGameState = game
-        self.next = BitmapFont('fasttracker2-style_12x12.png', 12, 12)
-        self.index = 0
-        self.inputTick = 0
-        self.game = game
-#        self.menuItems = ['Start Game', 'Quit']
+    def startup(self):
+        print('starting Options state stuff')
 
-    def setPlayState(self, state):
-        self.playGameState = state
+    def get_event(self, event):
+        if event.type == pygame.QUIT:
+            self.quit = True
+        self.get_event_menu(event)
 
-    def update(self, gameTime):
-        done = False
-        while not done:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    done = True
-                for box in self.input_boxes:
-                    box.handle_event(event)
-                    if box.search_done == True:
-                        mood_string = box.get_search_string()
-                        self.game.mood_string = mood_string
-                        done = True
+    def update(self, screen, dt):
+        self.update_menu()
+        self.draw(screen)
 
-            for box in self.input_boxes:
-                box.update()
-
-            self.game.mainwindow.fill((30, 30, 30))
-            for box in self.input_boxes:
-                box.draw(self.game.mainwindow)
-
-            pygame.display.flip()
-            self.clock.tick(30)
-
-        self.game.changeState(self.playGameState,[self.game.mood_string])
-
-
-    def draw(self, surface):
-
-        for box in self.input_boxes:
-            box.update()
-        surface.fill((10, 10, 10))
-        for box in self.input_boxes:
-            box.draw(surface)
-
-        count = 0
+    def draw(self, screen):
+        screen.fill((255, 0, 0))
+        self.draw_menu(screen)
